@@ -1,0 +1,9 @@
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\bin\Debug\TextAdventure.exe.config
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\bin\Debug\TextAdventure.exe
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\bin\Debug\TextAdventure.pdb
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\obj\Debug\TextAdventure.csprojResolveAssemblyReference.cache
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\obj\Debug\TextAdventure.exe
+c:\users\zrwal\documents\visual studio 2015\Projects\TextAdventure\TextAdventure\obj\Debug\TextAdventure.pdb
+C:\Users\zrwal\Source\Repos\Mind-of-Shadows\TextAdventure\bin\Debug\TextAdventure.exe.config
+C:\Users\zrwal\Source\Repos\Mind-of-Shadows\TextAdventure\obj\Debug\TextAdventure.exe
+C:\Users\zrwal\Source\Repos\Mind-of-Shadows\TextAdventure\obj\Debug\TextAdventure.pdb
