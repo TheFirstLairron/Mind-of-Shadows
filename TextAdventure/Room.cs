@@ -20,8 +20,10 @@ namespace TextAdventure
         public string southTransition { get; set; }
         public Room west { get; set; }
         public string westTransition { get; set; }
+        public Item item { get; set; }
         public Action<World> OnFirstVisit { get; set; }
         public Action<World> OnInteractCommand { get; set; }
+        public Action<World> OnItemInteract { get; set; }
 
         public Room(World game, string roomName, string desc, Room westRoom = null, Room eastRoom = null, Room northRoom = null, Room southRoom = null)
         {

@@ -16,6 +16,10 @@ namespace TextAdventure
 
             List<Room> roomList = new List<Room>();
 
+            List<Item> itemList = new List<Item>();
+
+            Inventory inventory = new Inventory();
+
             // Create Rooms
             Room entryway = new Room(game, "Entryway", "The entry hall to the house.");
             Room mainHallway = new Room(game, "Hallway", "The hallway off of the main room.");
@@ -24,27 +28,41 @@ namespace TextAdventure
             Room westBalconey = new Room(game, "West Balcony", "The balconey off the west side of the ballroom.");
             Room northBalconey = new Room(game, "North Balconey", "The balconey off the north side of the ballroom.");
 
-            // Populate the different room connections
+            // Create items
+            Item testingItem = new Item("Testing Item");
+            itemList.Add(testingItem);
 
+            // Populate the different room connections
             entryway.north = mainHallway;
+            entryway.northTransition = "You leave the main room and find yourself in a hallway.";
 
             mainHallway.south = entryway;
             mainHallway.north = ballroom;
+            mainHallway.southTransition = "You leave the hallway and find yourself in the main entryway.";
+            mainHallway.northTransition = "You leave the hallway and find yourself in the ballroom.";
+            mainHallway.item = testingItem;
 
             ballroom.south = mainHallway;
             ballroom.east = eastBalconey;
             ballroom.west = westBalconey;
             ballroom.north = northBalconey;
+            ballroom.southTransition = "You leave the ballroom and enter a hallway.";
+            ballroom.eastTransition = "You leave the ballroom and go out to the balconey.";
+            ballroom.westTransition = "You leave the ballroom and go out to the balconey.";
+            ballroom.northTransition = "You leave the ballroom and go out to the balconey.";
 
             eastBalconey.north = northBalconey;
             eastBalconey.west = ballroom;
+            eastBalconey.westTransition = "You leave the balconey and walk into the ballroom.";
 
             westBalconey.north = northBalconey;
             westBalconey.east = ballroom;
+            westBalconey.eastTransition = "You leave the balconey and walk into the ballroom.";
 
             northBalconey.west = westBalconey;
             northBalconey.east = eastBalconey;
             northBalconey.south = ballroom;
+            northBalconey.southTransition = "You leave the balconey and walk into the ballroom.";
 
 
             roomList.Add(entryway);
@@ -54,9 +72,13 @@ namespace TextAdventure
             roomList.Add(northBalconey);
             roomList.Add(westBalconey);
 
+            // Setting up game world
             game.rooms = roomList;
             game.currentRoom = entryway;
+            game.items = itemList;
+            game.inventory = inventory;
 
+            #region Lambdas
             // Add the first visit code for room one
             entryway.OnFirstVisit = ((World gameWorld) =>
             {
@@ -67,7 +89,7 @@ namespace TextAdventure
 
                     // make sure new r
                     if(entry != null){
-                        entry.description = "The main room looks different than the last time you visited...";
+                        entry.description = "The main room looks different than the last time you visited, a glowing stone is floating in the air...";
 
                         #region Add Portal Lambda
                         entry.OnInteractCommand = ((World world) =>
@@ -78,9 +100,10 @@ namespace TextAdventure
                                 Room ballRoom = world.GetRoomByName("Ballroom");
 
                                 if (entryRoom != null)
-                                {
+                                {                                    
                                     if (ballRoom != null)
                                     {
+                                        entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
                                         entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
                                         entryRoom.south = ballRoom;
                                     }
@@ -92,6 +115,14 @@ namespace TextAdventure
                 }
             });
 
+            mainHallway.OnItemInteract = ((World gameWorld) =>
+            {
+                Console.WriteLine("You pick up a sword");
+            });
+            #endregion
+
+
+            Console.WriteLine("INTRO HERE");
             // Main game loop
             while (isPlaying)
             {

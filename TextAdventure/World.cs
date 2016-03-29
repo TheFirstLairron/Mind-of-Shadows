@@ -12,6 +12,10 @@ namespace TextAdventure
 
         public Room currentRoom { get; set; }
 
+        public List<Item> items { get; set; }
+
+        public Inventory inventory { get; set; }
+
         // This function will validate the user input
         public bool IsValidInput(string input)
         {
@@ -53,6 +57,16 @@ namespace TextAdventure
             {
                 isValid = true;
             }
+            
+            if (input == "look around")
+            {
+                isValid = true;
+            }
+
+            if (input == "search")
+            {
+                isValid = true;
+            }
 
             return isValid;
         }
@@ -67,9 +81,6 @@ namespace TextAdventure
             }
             else
             {
-                currentRoom = newRoom;
-                currentRoom.timesVisited++;
-
                 // handle the transitions
                 switch(direction)
                 {
@@ -101,8 +112,11 @@ namespace TextAdventure
                         break;
                 }
 
+                currentRoom = newRoom;
+                currentRoom.timesVisited++;
+
                 // Check and trigger OnFirstVisit events
-                if(currentRoom.timesVisited == 1)
+                if (currentRoom.timesVisited == 1)
                 {
                     if (currentRoom.OnFirstVisit != null)
                     {
@@ -117,9 +131,31 @@ namespace TextAdventure
             // TODO
         }
 
+        public void InteractWithInventory()
+        {
+            // TODO
+        }
+
+        public void AddItemToInventory(Room curRoom)
+        {
+            if (curRoom != null)
+            {
+                if (curRoom.item != null)
+                {
+                    if (curRoom.item.name != null)
+                    {
+                        inventory.AddItem(curRoom.item.name, curRoom.item);
+                        if (curRoom.OnItemInteract != null)
+                        {
+                            curRoom.OnItemInteract(this);
+                        }
+                    }
+                }
+            }
+        }
+
         public bool InteractWithRoom()
         {
-            Console.WriteLine(currentRoom.description);
             string input;
             bool isStillPlaying = true;
             do
@@ -160,6 +196,12 @@ namespace TextAdventure
                 case "exit":
                     isStillPlaying = false;
                     break;
+                case "look around":
+                    Console.WriteLine(currentRoom.description);
+                    break;
+                case "search":
+                    AddItemToInventory(currentRoom);
+                    break;
                 default:
                     break;
             }
@@ -183,10 +225,12 @@ namespace TextAdventure
 
         public World(){}
 
-        public World(List<Room> roomList, Room firstRoom)
+        public World(List<Room> roomList, Room firstRoom, List<Item> itemList, Inventory inv)
         {
             rooms = roomList;
             currentRoom = firstRoom;
+            items = itemList;
+            inventory = inv;
         }
     }
 }
