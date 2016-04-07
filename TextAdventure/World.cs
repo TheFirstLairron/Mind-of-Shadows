@@ -120,10 +120,12 @@ namespace TextAdventure
 
                 if(!IsValidInput(input))
                 {
+                    Console.Clear();
                     Console.WriteLine("That is not a valid command");
                 }
 
             } while (!IsValidInput(input));
+            Console.Clear();
 
             string commandName = cmdManager.GetCommandNameByInputIdentifier(input);
 

@@ -93,6 +93,10 @@ namespace TextAdventure
                 {
                     if (ballRoom != null)
                     {
+                        //Console.BackgroundColor = ConsoleColor.Blue;
+                        //Console.Clear();
+
+                        Console.WriteLine("The blue stone starts to spin around violently...");
                         entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
                         entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
                         entryRoom.south = ballRoom;
@@ -125,19 +129,24 @@ namespace TextAdventure
             ballroom.northTransition = "You leave the ballroom and go out to the balconey.";
 
             eastBalconey.north = northBalconey;
+            eastBalconey.northTransition = "You walk along the balconey towards the north.";
             eastBalconey.west = ballroom;
             eastBalconey.westTransition = "You leave the balconey and walk into the ballroom.";
 
             westBalconey.north = northBalconey;
+            eastBalconey.northTransition = "You walk along the balconey towards the north.";
             westBalconey.east = ballroom;
             westBalconey.eastTransition = "You leave the balconey and walk into the ballroom.";
 
             northBalconey.west = westBalconey;
+            northBalconey.westTransition = "You walk along the balconey towards the west.";
             northBalconey.east = eastBalconey;
+            northBalconey.eastTransition = "You walk along the balconey towards the east.";
             northBalconey.south = ballroom;
             northBalconey.southTransition = "You leave the balconey and walk into the ballroom.";
             #endregion Room Connections
 
+            #region Room Events
             entryway.OnEnter = ((gameWorld) =>
             {
                 if (gameWorld.currentRoom.timesVisited == 1)
@@ -164,6 +173,8 @@ namespace TextAdventure
                 return true;
             });
 
+            #endregion Room Events
+
             roomList.Add(entryway);
             roomList.Add(mainHallway);
             roomList.Add(ballroom);
@@ -178,6 +189,10 @@ namespace TextAdventure
             game.inventory = inventory;
             game.cmdManager = manager;
 
+
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
 
             Console.WriteLine("INTRO HERE");
             // Main game loop
