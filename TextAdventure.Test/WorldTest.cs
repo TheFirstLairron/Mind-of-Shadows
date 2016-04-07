@@ -15,6 +15,8 @@ namespace TextAdventure.Test
         {
             World game = new World();
             CommandManager manager = new CommandManager(game);
+            Room room = new Room(game, "test", "testing room");
+            game.currentRoom = room;
 
             Command exit = new Command("Exit", "exit", "all", (gameWorld) => {});
 
