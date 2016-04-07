@@ -23,8 +23,7 @@ namespace TextAdventure
         public Item item { get; set; }
         public Action<World> OnEnter { get; set; }
         public Func<World, bool> OnLeave { get; set; }
-        public Action<World> OnInteractCommand { get; set; }
-        public Action<World> OnItemInteract { get; set; }
+        
 
         public Room(World game, string roomName, string desc, Room westRoom = null, Room eastRoom = null, Room northRoom = null, Room southRoom = null)
         {

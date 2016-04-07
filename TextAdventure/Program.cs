@@ -84,8 +84,25 @@ namespace TextAdventure
 
             manager.RegisterCommand(exit);
 
-            #endregion Commands
+            Command touchBlueStone = new Command("Touch Blue Stone", "touch blue stone", "Entryway", (gameWorld) =>
+            {
+                Room entryRoom = gameWorld.GetRoomByName("Entryway");
+                Room ballRoom = gameWorld.GetRoomByName("Ballroom");
 
+                if (entryRoom != null)
+                {
+                    if (ballRoom != null)
+                    {
+                        entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
+                        entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
+                        entryRoom.south = ballRoom;
+                    }
+                }
+            }, false);
+
+            manager.RegisterCommand(touchBlueStone);
+
+            #endregion Commands
 
             #region Room Connections
             // Populate the different room connections
@@ -121,6 +138,32 @@ namespace TextAdventure
             northBalconey.southTransition = "You leave the balconey and walk into the ballroom.";
             #endregion Room Connections
 
+            entryway.OnEnter = ((gameWorld) =>
+            {
+                if (gameWorld.currentRoom.timesVisited == 1)
+                {
+                    gameWorld.cmdManager.RegisterCommand(touchBlueStone.CommandName);
+                }
+            });
+
+            entryway.OnLeave = ((gameWorld) =>
+            {
+                Room entry = gameWorld.GetRoomByName("Entryway");
+                Room ballRoom = gameWorld.GetRoomByName("Ballroom");
+
+                if (entry != null)
+                {
+                    if (entry != null)
+                    {
+                        entry.description = "The room looks largely the same, except for a glowing blue stone that is floating in front of the south wall";
+                        entry.south = ballRoom;
+                        entry.southTransition = "You pass through the portal, and find yourself in the ballroom of the house.";
+                        gameWorld.cmdManager.UnregisterCommandByName("Touch Blue Stone");
+                    }
+                }
+                return true;
+            });
+
             roomList.Add(entryway);
             roomList.Add(mainHallway);
             roomList.Add(ballroom);
@@ -134,30 +177,6 @@ namespace TextAdventure
             game.items = itemList;
             game.inventory = inventory;
             game.cmdManager = manager;
-
-            #region Lambdas
-
-            #region Add Portal Lambda
-            entryway.OnInteractCommand = ((World world) =>
-            {
-                if (world != null)
-                {
-                    Room entryRoom = world.GetRoomByName("Entryway");
-                    Room ballRoom = world.GetRoomByName("Ballroom");
-
-                    if (entryRoom != null)
-                    {
-                        if (ballRoom != null)
-                        {
-                            entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
-                            entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
-                            entryRoom.south = ballRoom;
-                        }
-                    }
-                }
-            });
-            #endregion
-            #endregion
 
 
             Console.WriteLine("INTRO HERE");

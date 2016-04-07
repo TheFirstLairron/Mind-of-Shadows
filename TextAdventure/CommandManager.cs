@@ -32,6 +32,14 @@ namespace TextAdventure
             }
         }
 
+        public void RegisterCommand(string commandName)
+        {
+            if(IsCommandRegisteredUnderName(commandName))
+            {
+                commands[commandName].isRegistered = true;
+            }
+        }
+
         public void CallCommandByName(string nameOfCommand)
         {
             if(IsCommandRegisteredUnderName(nameOfCommand))
@@ -46,10 +54,8 @@ namespace TextAdventure
 
             if(IsCommandRegisteredUnderName(nameOfCommand))
             {
-                if (commands.Remove(nameOfCommand))
-                {
-                    commandRemoved = true;
-                }
+                commands[nameOfCommand].isRegistered = false;
+                commandRemoved = true;
             }
 
             return commandRemoved;
@@ -61,9 +67,9 @@ namespace TextAdventure
 
             foreach (var item in commands)
             {
-                if(item.Value?.WrittenCommandText == inputIdentifier)
+                if (item.Value.WrittenCommandText == inputIdentifier && item.Value.isRegistered)
                 {
-                    name = item.Value?.CommandName;
+                    name = item.Value.CommandName;
                 }
             }
 
@@ -77,7 +83,28 @@ namespace TextAdventure
 
             foreach(var item in commands)
             {
-                inputIdentifiers.Add(item.Value.WrittenCommandText);
+                if (item.Value.isRegistered)
+                {
+                    inputIdentifiers.Add(item.Value.WrittenCommandText);
+                }
+            }
+
+            return inputIdentifiers;
+        }
+
+        public List<string> GetAllInputIdentifiers(string roomName)
+        {
+            List<string> inputIdentifiers = new List<string>();
+
+            foreach(var item in commands)
+            {
+                if (item.Value.isRegistered)
+                {
+                    if (item.Value.RoomNameWhereUsable == roomName || item.Value.RoomNameWhereUsable == "all")
+                    {
+                        inputIdentifiers.Add(item.Value.WrittenCommandText);
+                    }
+                }
             }
 
             return inputIdentifiers;

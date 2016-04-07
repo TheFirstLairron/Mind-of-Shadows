@@ -11,6 +11,7 @@ namespace TextAdventure
         public string CommandName { get; set; }
         public string WrittenCommandText { get; set; }
         public string RoomNameWhereUsable { get; set; }
+        public bool isRegistered { get; set; }
         public Action<World> CommandAction { get; set; }
 
         public void ExecuteActions(World world)
@@ -21,12 +22,13 @@ namespace TextAdventure
             }
         }
 
-        public Command(string name, string cmdText, string roomName, Action<World> method)
+        public Command(string name, string cmdText, string roomName, Action<World> method, bool isRegisteredByDefault = true)
         {
             CommandName = name;
             WrittenCommandText = cmdText;
             RoomNameWhereUsable = roomName;
             CommandAction = method;
+            isRegistered = isRegisteredByDefault;
         }
     }
 }

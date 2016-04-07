@@ -27,8 +27,9 @@ namespace TextAdventure
 
             input = input.ToLower();
 
-            foreach(var item in cmdManager.GetAllInputIdentifiers())
+            foreach(var item in cmdManager.GetAllInputIdentifiers(currentRoom.name))
             {
+                //Console.WriteLine(item);
                 if(input == item)
                 {
                     isValid = true;
@@ -107,18 +108,6 @@ namespace TextAdventure
         public void InteractWithInventory()
         {
             // TODO
-        }
-
-        public void AddItemToInventory(Room curRoom)
-        {
-            if (curRoom?.item?.name != null)
-            {
-                inventory.AddItem(curRoom.item.name, curRoom.item);
-                if (curRoom.OnItemInteract != null)
-                {
-                    curRoom.OnItemInteract(this);
-                }
-            }
         }
 
         public bool InteractWithRoom()
