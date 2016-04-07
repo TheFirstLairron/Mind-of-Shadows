@@ -16,6 +16,10 @@ namespace TextAdventure
 
         public Inventory inventory { get; set; }
 
+        public CommandManager cmdManager { get; set; }
+
+        public bool isStillPlaying { get; set; }
+
         // This function will validate the user input
         public bool IsValidInput(string input)
         {
@@ -23,49 +27,12 @@ namespace TextAdventure
 
             input = input.ToLower();
 
-            if (input == "south")
+            foreach(var item in cmdManager.GetAllInputIdentifiers())
             {
-                isValid = true;
-            }
-
-            if (input == "north")
-            {
-                isValid = true;
-            }
-
-            if (input == "west")
-            {
-                isValid = true;
-            }
-
-            if (input == "east")
-            {
-                isValid = true;
-            }
-
-            if (input == "quit")
-            {
-                isValid = true;
-            }
-
-            if (input == "exit")
-            {
-                isValid = true;
-            }
-
-            if (input == "interact")
-            {
-                isValid = true;
-            }
-            
-            if (input == "look around")
-            {
-                isValid = true;
-            }
-
-            if (input == "search")
-            {
-                isValid = true;
+                if(input == item)
+                {
+                    isValid = true;
+                }
             }
 
             return isValid;
@@ -112,16 +79,22 @@ namespace TextAdventure
                         break;
                 }
 
-                currentRoom = newRoom;
-                currentRoom.timesVisited++;
+                bool shouldLeave = true;
 
-                // Check and trigger OnFirstVisit events
-                if (currentRoom.timesVisited == 1)
+                if (currentRoom.OnLeave != null)
                 {
-                    if (currentRoom.OnFirstVisit != null)
-                    {
-                        currentRoom.OnFirstVisit(currentRoom.gameWorld);
-                    }
+                    shouldLeave = currentRoom.OnLeave(currentRoom.gameWorld);
+                }
+
+                if (shouldLeave)
+                {
+                    currentRoom = newRoom;
+                    currentRoom.timesVisited++;
+                }
+
+                if(currentRoom.OnEnter != null)
+                {
+                    currentRoom.OnEnter(currentRoom.gameWorld);
                 }
             }
         }
@@ -138,18 +111,12 @@ namespace TextAdventure
 
         public void AddItemToInventory(Room curRoom)
         {
-            if (curRoom != null)
+            if (curRoom?.item?.name != null)
             {
-                if (curRoom.item != null)
+                inventory.AddItem(curRoom.item.name, curRoom.item);
+                if (curRoom.OnItemInteract != null)
                 {
-                    if (curRoom.item.name != null)
-                    {
-                        inventory.AddItem(curRoom.item.name, curRoom.item);
-                        if (curRoom.OnItemInteract != null)
-                        {
-                            curRoom.OnItemInteract(this);
-                        }
-                    }
+                    curRoom.OnItemInteract(this);
                 }
             }
         }
@@ -157,7 +124,6 @@ namespace TextAdventure
         public bool InteractWithRoom()
         {
             string input;
-            bool isStillPlaying = true;
             do
             {
                 input = Console.ReadLine();
@@ -170,41 +136,9 @@ namespace TextAdventure
 
             } while (!IsValidInput(input));
 
-            switch (input)
-            {
-                case "south":
-                    MoveRoom(currentRoom.south, "south");
-                    break;
-                case "north":
-                    MoveRoom(currentRoom.north, "north");
-                    break;
-                case "east":
-                    MoveRoom(currentRoom.east, "east");
-                    break;
-                case "west":
-                    MoveRoom(currentRoom.west, "west");
-                    break;
-                case "interact":
-                    if (currentRoom.OnInteractCommand != null)
-                    {
-                        currentRoom.OnInteractCommand(this);
-                    }
-                    break;
-                case "quit":
-                    isStillPlaying = false;
-                    break;
-                case "exit":
-                    isStillPlaying = false;
-                    break;
-                case "look around":
-                    Console.WriteLine(currentRoom.description);
-                    break;
-                case "search":
-                    AddItemToInventory(currentRoom);
-                    break;
-                default:
-                    break;
-            }
+            string commandName = cmdManager.GetCommandNameByInputIdentifier(input);
+
+            cmdManager.CallCommandByName(commandName);
 
             return isStillPlaying;
         }
@@ -223,14 +157,19 @@ namespace TextAdventure
             return roomToReturn;
         }
 
-        public World(){}
+        public World()
+        {
+            isStillPlaying = true;
+        }
 
-        public World(List<Room> roomList, Room firstRoom, List<Item> itemList, Inventory inv)
+        public World(List<Room> roomList, Room firstRoom, List<Item> itemList, Inventory inv, CommandManager manager)
         {
             rooms = roomList;
             currentRoom = firstRoom;
             items = itemList;
             inventory = inv;
+            cmdManager = manager;
+            isStillPlaying = true;
         }
     }
 }

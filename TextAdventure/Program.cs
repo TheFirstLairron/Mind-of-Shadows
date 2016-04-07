@@ -20,6 +20,8 @@ namespace TextAdventure
 
             Inventory inventory = new Inventory();
 
+            CommandManager manager = new CommandManager(game);
+
             // Create Rooms
             Room entryway = new Room(game, "Entryway", "The entry hall to the house.");
             Room mainHallway = new Room(game, "Hallway", "The hallway off of the main room.");
@@ -29,9 +31,63 @@ namespace TextAdventure
             Room northBalconey = new Room(game, "North Balconey", "The balconey off the north side of the ballroom.");
 
             // Create items
-            Item testingItem = new Item("Testing Item");
+            Item testingItem = new Item("Sword", "A rusty old sword with a dull blade");
             itemList.Add(testingItem);
 
+            #region Commands
+            Command moveNorth = new Command("Move North", "north", "all", (gameWorld) =>
+            {
+                gameWorld.MoveRoom(gameWorld.currentRoom.north, "north");
+            });
+
+            manager.RegisterCommand(moveNorth);
+
+            Command moveEast = new Command("Move East", "east", "all", (gameWorld) =>
+            {
+                gameWorld.MoveRoom(gameWorld.currentRoom.east, "east");
+            });
+
+            manager.RegisterCommand(moveEast);
+
+            Command moveSouth = new Command("Move South", "south", "all", (gameWorld) =>
+            {
+                gameWorld.MoveRoom(gameWorld.currentRoom.south, "south");
+            });
+
+            manager.RegisterCommand(moveSouth);
+
+            Command moveWest = new Command("Move West", "west", "all", (gameWorld) =>
+            {
+                gameWorld.MoveRoom(gameWorld.currentRoom.west, "west");
+            });
+
+            manager.RegisterCommand(moveWest);
+
+            Command lookAround = new Command("Look Around", "look around", "all", (gameWorld) =>
+            {
+                Console.WriteLine(gameWorld?.currentRoom?.description);
+            });
+
+            manager.RegisterCommand(lookAround);
+
+            Command quit = new Command("Quit", "quit", "all", (gameWorld) =>
+            {
+                gameWorld.isStillPlaying = false;
+            });
+
+            manager.RegisterCommand(quit);
+
+            Command exit = new Command("Exit", "exit", "all", (gameWorld) =>
+            {
+                gameWorld.isStillPlaying = false;
+            });
+
+            manager.RegisterCommand(exit);
+
+            #endregion Commands
+
+
+            #region Room Connections
             // Populate the different room connections
             entryway.north = mainHallway;
             entryway.northTransition = "You leave the main room and find yourself in a hallway.";
@@ -63,7 +119,7 @@ namespace TextAdventure
             northBalconey.east = eastBalconey;
             northBalconey.south = ballroom;
             northBalconey.southTransition = "You leave the balconey and walk into the ballroom.";
-
+            #endregion Room Connections
 
             roomList.Add(entryway);
             roomList.Add(mainHallway);
@@ -77,48 +133,30 @@ namespace TextAdventure
             game.currentRoom = entryway;
             game.items = itemList;
             game.inventory = inventory;
+            game.cmdManager = manager;
 
             #region Lambdas
-            // Add the first visit code for room one
-            entryway.OnFirstVisit = ((World gameWorld) =>
+
+            #region Add Portal Lambda
+            entryway.OnInteractCommand = ((World world) =>
             {
-                // make sure the world isnt null
-                if (gameWorld != null)
+                if (world != null)
                 {
-                    Room entry = gameWorld.GetRoomByName("Entryway");
+                    Room entryRoom = world.GetRoomByName("Entryway");
+                    Room ballRoom = world.GetRoomByName("Ballroom");
 
-                    // make sure new r
-                    if(entry != null){
-                        entry.description = "The main room looks different than the last time you visited, a glowing stone is floating in the air...";
-
-                        #region Add Portal Lambda
-                        entry.OnInteractCommand = ((World world) =>
+                    if (entryRoom != null)
+                    {
+                        if (ballRoom != null)
                         {
-                            if (gameWorld != null)
-                            {
-                                Room entryRoom = world.GetRoomByName("Entryway");
-                                Room ballRoom = world.GetRoomByName("Ballroom");
-
-                                if (entryRoom != null)
-                                {                                    
-                                    if (ballRoom != null)
-                                    {
-                                        entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
-                                        entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
-                                        entryRoom.south = ballRoom;
-                                    }
-                                }
-                            }
-                        });
-                        #endregion
+                            entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
+                            entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
+                            entryRoom.south = ballRoom;
+                        }
                     }
                 }
             });
-
-            mainHallway.OnItemInteract = ((World gameWorld) =>
-            {
-                Console.WriteLine("You pick up a sword");
-            });
+            #endregion
             #endregion
 
 

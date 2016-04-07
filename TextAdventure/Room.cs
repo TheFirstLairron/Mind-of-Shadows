@@ -21,7 +21,8 @@ namespace TextAdventure
         public Room west { get; set; }
         public string westTransition { get; set; }
         public Item item { get; set; }
-        public Action<World> OnFirstVisit { get; set; }
+        public Action<World> OnEnter { get; set; }
+        public Func<World, bool> OnLeave { get; set; }
         public Action<World> OnInteractCommand { get; set; }
         public Action<World> OnItemInteract { get; set; }
 
