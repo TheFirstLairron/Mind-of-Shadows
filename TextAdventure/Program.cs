@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TextAdventure
@@ -18,21 +19,33 @@ namespace TextAdventure
 
             List<Item> itemList = new List<Item>();
 
+            List<Enemy> enemyList = new List<Enemy>();
+
             Inventory inventory = new Inventory();
 
             CommandManager manager = new CommandManager(game);
 
+            AttackManager attackManager = new AttackManager(game);
+
+            Player player = new Player(10, 10, 10, new List<string> { Constants.ATTACK_BASIC });
+
             // Create Rooms
-            Room entryway = new Room(game, "Entryway", "The entry hall to the house.");
-            Room mainHallway = new Room(game, "Hallway", "The hallway off of the main room.");
-            Room ballroom = new Room(game, "Ballroom", "A large hall for dancing.");
-            Room eastBalconey = new Room(game, "East Balconey", "The balconey off the east side of the ballroom.");
-            Room westBalconey = new Room(game, "West Balcony", "The balconey off the west side of the ballroom.");
-            Room northBalconey = new Room(game, "North Balconey", "The balconey off the north side of the ballroom.");
+            Room entryway = new Room(game, Constants.ENTRYWAY_NAME, Constants.ENTRYWAY_DESC);
+            Room mainHallway = new Room(game, Constants.HALLWAY_NAME, Constants.HALLWAY_DESC);
+            Room ballroom = new Room(game, Constants.BALLROOM_NAME, Constants.BALLROOM_DESC);
+            Room eastBalconey = new Room(game, Constants.EAST_BALCONEY_NAME, Constants.EAST_BALCONEY_DESC);
+            Room westBalconey = new Room(game, Constants.WEST_BALCONEY_NAME, Constants.WEST_BALCONEY_DESC);
+            Room northBalconey = new Room(game, Constants.NORTH_BALCONEY_NAME, Constants.NORTH_BALCONEY_DESC);
 
             // Create items
             Item testingItem = new Item("Sword", "A rusty old sword with a dull blade");
             itemList.Add(testingItem);
+
+            Enemy testingEnemy = new Enemy("Testing Enemy", 10, 10, 10, new List<string> { Constants.ATTACK_BASIC });
+            enemyList.Add(testingEnemy);
+
+            Attack strikeAttack = new Attack(Constants.ATTACK_BASIC, Constants.ATTACK_BASIC, 15);
+            attackManager.RegisterAttack(strikeAttack);
 
             #region Commands
             Command moveNorth = new Command("Move North", "north", "all", (gameWorld) =>
@@ -84,7 +97,7 @@ namespace TextAdventure
 
             manager.RegisterCommand(exit);
 
-            Command touchBlueStone = new Command("Touch Blue Stone", "touch blue stone", "Entryway", (gameWorld) =>
+            Command touchBlueStone = new Command("Touch Blue Stone", "touch blue stone", Constants.ENTRYWAY_NAME, (gameWorld) =>
             {
                 Room entryRoom = gameWorld.GetRoomByName("Entryway");
                 Room ballRoom = gameWorld.GetRoomByName("Ballroom");
@@ -97,9 +110,11 @@ namespace TextAdventure
                         //Console.Clear();
 
                         Console.WriteLine("The blue stone starts to spin around violently...");
+                        Console.WriteLine("The stone explodes and releases a blinding blue light.");
                         entryRoom.description = "The main room is now filled with a mysterious blue light, a portal has taken the place of the stone in the south.";
                         entryRoom.southTransition = "You enter the strange portal, and appear in the ballroom...";
                         entryRoom.south = ballRoom;
+                        manager.UnregisterCommandByName("Touch Blue Stone");
                     }
                 }
             }, false);
@@ -152,6 +167,7 @@ namespace TextAdventure
                 if (gameWorld.currentRoom.timesVisited == 1)
                 {
                     gameWorld.cmdManager.RegisterCommand(touchBlueStone.CommandName);
+
                 }
             });
 
@@ -165,12 +181,26 @@ namespace TextAdventure
                     if (entry != null)
                     {
                         entry.description = "The room looks largely the same, except for a glowing blue stone that is floating in front of the south wall";
-                        entry.south = ballRoom;
-                        entry.southTransition = "You pass through the portal, and find yourself in the ballroom of the house.";
-                        gameWorld.cmdManager.UnregisterCommandByName("Touch Blue Stone");
                     }
                 }
                 return true;
+            });
+
+            mainHallway.OnEnter = ((gameWorld) =>
+            {
+                BattleManager battleManager = new BattleManager(gameWorld.attackManager, gameWorld.player, gameWorld.GetEnemyByName("Testing Enemy"));
+                battleManager.Battle();
+                if(battleManager.hasPlayerWon())
+                {
+                    Console.WriteLine("Player has won!");
+                }
+                else
+                {
+                    gameWorld.isStillPlaying = false;
+                    Console.WriteLine("Player has lost!");
+                }
+                Console.WriteLine(gameWorld.currentRoom.description);
+                mainHallway.OnEnter = null;
             });
 
             #endregion Room Events
@@ -188,6 +218,9 @@ namespace TextAdventure
             game.items = itemList;
             game.inventory = inventory;
             game.cmdManager = manager;
+            game.enemies = enemyList;
+            game.attackManager = attackManager;
+            game.player = player;
 
 
             Console.BackgroundColor = ConsoleColor.DarkRed;

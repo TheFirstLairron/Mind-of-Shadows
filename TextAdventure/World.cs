@@ -8,15 +8,21 @@ namespace TextAdventure
 {
     public class World
     {
+        public Room currentRoom { get; set; }
+
         public List<Room> rooms { get; set; }
 
-        public Room currentRoom { get; set; }
+        public List<Enemy> enemies { get; set; }
 
         public List<Item> items { get; set; }
 
         public Inventory inventory { get; set; }
 
         public CommandManager cmdManager { get; set; }
+
+        public AttackManager attackManager { get; set; }
+
+        public Player player { get; set; }
 
         public bool isStillPlaying { get; set; }
 
@@ -137,15 +143,19 @@ namespace TextAdventure
         public Room GetRoomByName(string nameToFind)
         {
             Room roomToReturn = null;
-            foreach (Room room in rooms)
-            {
-                if(room.name == nameToFind)
-                {
-                    roomToReturn = room;
-                }
-            }
+
+            roomToReturn = rooms.Where(x => x.name == nameToFind).First();
 
             return roomToReturn;
+        }
+
+        public Enemy GetEnemyByName(string name)
+        {
+            Enemy enemyToReturn = null;
+
+            enemyToReturn = enemies.Where(x => x.name == name).First();
+
+            return enemyToReturn;
         }
 
         public World()
@@ -153,7 +163,7 @@ namespace TextAdventure
             isStillPlaying = true;
         }
 
-        public World(List<Room> roomList, Room firstRoom, List<Item> itemList, Inventory inv, CommandManager manager)
+        public World(List<Room> roomList, Room firstRoom, List<Item> itemList, Inventory inv, CommandManager manager, Player player)
         {
             rooms = roomList;
             currentRoom = firstRoom;

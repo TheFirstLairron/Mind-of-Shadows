@@ -45,12 +45,16 @@
   <ItemGroup>
     <Compile Include="Attack.cs" />
     <Compile Include="AttackManager.cs" />
+    <Compile Include="BattleManager.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandManager.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DelayedOutputString.cs" />
-    <Compile Include="ICombatable.cs" />
+    <Compile Include="Enemy.cs" />
+    <Compile Include="EntityBase.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Room.cs" />

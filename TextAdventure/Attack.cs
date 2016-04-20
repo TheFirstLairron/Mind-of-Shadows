@@ -10,6 +10,13 @@ namespace TextAdventure
     {
         public string name { get; set; }
         public string writtenIdentifier { get; set; }
-        public string amountOfDamage { get; set; }
+        public int amountOfDamage { get; set; }
+
+        public Attack(string Name, string identifier, int amount)
+        {
+            name = Name;
+            writtenIdentifier = identifier;
+            amountOfDamage = amount;
+        }
     }
 }
